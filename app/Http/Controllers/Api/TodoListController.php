@@ -34,7 +34,7 @@ class TodoListController extends Controller
 			if ($request->has('order_direction') && in_array(strtolower($request->order_direction), ['asc', 'desc'])) {
 				$this->orderDirection = strtolower($request->order_direction);
 			}	
-			
+
 			// Get the results ordered by ID descending
 			// $todoLists = $query->orderBy($this->orderBy, $this->orderDirection)->get();
 			$todoLists = $query->orderBy($this->orderBy, $this->orderDirection)->get();
@@ -47,6 +47,7 @@ class TodoListController extends Controller
 					'date' => TodoListHelper::formatDate($todo->due_date),
 					'time_tracked' => $todo->time_tracked,
 					'status' => TodoListHelper::formatEnumValue($todo->status),
+					'status_raw' => $todo->status,
 					'priority' => TodoListHelper::formatEnumValue($todo->priority),
 					'type' => TodoListHelper::formatEnumValue($todo->type),
 					'estimated_sp' => $todo->estimated_sp,
