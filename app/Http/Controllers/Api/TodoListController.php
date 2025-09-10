@@ -10,10 +10,34 @@ use Illuminate\Http\JsonResponse;
 
 class TodoListController extends Controller
 {
-	public function index(): JsonResponse
+	private $orderBy = 'id';
+	private $orderDirection = 'desc';
+
+	public function index(Request $request): JsonResponse
 	{
 		try {
-			$todoLists = TodoLists::orderBy('id', 'desc')->get();
+			// Build the query
+			$query = TodoLists::query();
+
+			// Apply search filter if provided
+			if ($request->has('search') && !empty($request->search)) {
+				$searchTerm = $request->search;
+				$query->where(function ($q) use ($searchTerm) {
+					$q->where('title', 'LIKE', '%' . $searchTerm . '%');
+				});
+			}
+
+			if ($request->has('sort_by') && in_array($request->sort_by, ['id', 'title', 'due_date', 'status', 'priority', 'type', 'estimated_sp', 'actual_sp'])) {
+				$this->orderBy = $request->sort_by;
+			}
+
+			if ($request->has('order_direction') && in_array(strtolower($request->order_direction), ['asc', 'desc'])) {
+				$this->orderDirection = strtolower($request->order_direction);
+			}	
+			
+			// Get the results ordered by ID descending
+			// $todoLists = $query->orderBy($this->orderBy, $this->orderDirection)->get();
+			$todoLists = $query->orderBy($this->orderBy, $this->orderDirection)->get();
 
 			$formattedData = $todoLists->map(function ($todo) {
 				return [
@@ -33,7 +57,9 @@ class TodoListController extends Controller
 			return response()->json([
 				'success' => true,
 				'message' => 'Todo lists retrieved successfully',
-				'data' => $formattedData
+				'data' => $formattedData,
+				'search' => $request->input('search', null), // Include search term in response for reference
+				'total_count' => $formattedData->count()
 			], 200);
 		} catch (\Exception $e) {
 			return response()->json([
@@ -150,7 +176,7 @@ class TodoListController extends Controller
 				'priority' => $validatedData['priority'] ?? $todoList->priority,
 				'type' => $validatedData['type'] ?? $todoList->type,
 				'estimated_sp' => $validatedData['estimated_sp'] ?? $todoList->estimated_sp,
-				'actual_sp' => $validatedData['actual_sp'] ?? $todoList->actual_sp 
+				'actual_sp' => $validatedData['actual_sp'] ?? $todoList->actual_sp
 			];
 
 			$todoList->update($mapingPayloads);
@@ -210,7 +236,7 @@ class TodoListController extends Controller
 					'deleted_count' => $deletedCount,
 					'deleted_ids' => $ids
 				], 200);
-			} 
+			}
 			// Single deletion using URL parameter
 			else if ($id) {
 				$todoList = TodoLists::findOrFail($id);
