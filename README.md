@@ -1,61 +1,355 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TodoList Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 11 REST API for managing todo lists with comprehensive CRUD operations, search functionality, and bulk operations.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- ✅ Complete CRUD operations for TodoList items
+- 🔍 Search functionality by task name
+- 📦 Bulk delete operations
+- 📊 Excel export with advanced filtering
+- 🏷️ Priority levels (low, medium, high, critical, best_effort)
+- 📊 Status tracking (pending, in_progress, completed)
+- 🎯 Task types (task, bug, feature)
+- 👥 Developer assignment
+- ⏰ Due date management
+- 📝 Time tracking
+- 🧪 Comprehensive unit testing
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.2
+- Composer
+- SQLite (default) or MySQL/PostgreSQL
+- Git
 
-## Learning Laravel
+## Installation & Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone the Repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone https://github.com/dzulfiardev/todolist-backend.git
+cd todolist-backend
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependencies
 
-## Laravel Sponsors
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Environment Configuration
 
-### Premium Partners
+Copy the environment file and configure it:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+cp .env.example .env
+```
+
+Generate application key:
+
+```bash
+php artisan key:generate
+```
+
+### 4. Database Setup
+
+The application is configured to use SQLite by default. The database file is already included at `database/database.sqlite`.
+
+If you prefer to use MySQL/PostgreSQL, update your `.env` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+### 5. Run Migrations
+
+```bash
+php artisan migrate
+```
+
+### 6. Clear Cache (if needed)
+
+```bash
+php artisan optimize:clear
+```
+
+## Running the Application
+
+### Development Server
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The API will be available at `http://localhost:8000`
+
+### Testing
+
+Run the test suite:
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test files
+php artisan test tests/Unit/TodoListStoreTest.php
+php artisan test tests/Unit/TodoListDestroyTest.php
+
+# Run tests with coverage (if xdebug is installed)
+php artisan test --coverage
+```
+
+## API Endpoints
+
+### Base URL
+```
+http://localhost:8000/api
+```
+
+### TodoList Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/todo-lists` | Get all todo lists |
+| GET | `/api/todo-lists?search=keyword` | Search todo lists by task name |
+| POST | `/api/todo-lists` | Create new todo list |
+| GET | `/api/todo-lists/{id}` | Get specific todo list |
+| PUT | `/api/todo-lists/{id}` | Update todo list |
+| DELETE | `/api/todo-lists/{id}` | Delete single todo list |
+| DELETE | `/api/todo-lists` | Bulk delete todo lists |
+
+### Reports Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/reports/todo-lists/export` | Export todo lists to Excel with filtering |
+| GET | `/api/reports/todo-lists/preview` | Preview export data (JSON response) |
+
+#### Export Filters
+
+Both export and preview endpoints support the following query parameters:
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `title` | string | Filter by task title (partial match) | `title=App` |
+| `assigne` | string | Filter by assignees (comma-separated) | `assigne=john,zul` |
+| `start` | date | Start date for due_date range | `start=2025-09-01` |
+| `end` | date | End date for due_date range | `end=2025-12-31` |
+| `min` | numeric | Minimum time tracked | `min=0` |
+| `max` | numeric | Maximum time tracked | `max=10` |
+| `status` | string | Filter by status (comma-separated) | `status=pending,in_progress` |
+| `priority` | string | Filter by priority (comma-separated) | `priority=high,medium` |
+
+### Request Examples
+
+#### Create TodoList
+```bash
+curl -X POST http://localhost:8000/api/todo-lists \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task": "Complete project documentation",
+    "developer": "John Doe",
+    "priority": "high",
+    "status": "pending",
+    "type": "task",
+    "due_date": "2025-12-31",
+    "description": "Write comprehensive API documentation",
+    "time_tracked": "2.5"
+  }'
+```
+
+#### Search TodoLists
+```bash
+curl "http://localhost:8000/api/todo-lists?search=documentation"
+```
+
+#### Export to Excel (with filters)
+```bash
+# Export all todos
+curl "http://localhost:8000/api/reports/todo-lists/export" --output todolist_export.xlsx
+
+# Export with filters
+curl "http://localhost:8000/api/reports/todo-lists/export?title=App&status=pending,in_progress&start=2025-09-01&end=2025-12-31" --output filtered_export.xlsx
+
+# Export by assignees and priority
+curl "http://localhost:8000/api/reports/todo-lists/export?assigne=john,alice&priority=high,critical" --output assignee_export.xlsx
+
+# Export by time range
+curl "http://localhost:8000/api/reports/todo-lists/export?min=0&max=8" --output time_filtered_export.xlsx
+```
+
+#### Preview Export Data
+```bash
+# Preview data before export
+curl "http://localhost:8000/api/reports/todo-lists/preview?title=App&status=pending" -H "Accept: application/json"
+```
+
+#### Bulk Delete
+```bash
+curl -X DELETE http://localhost:8000/api/todo-lists \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ids": [1, 2, 3]
+  }'
+```
+
+#### Bulk Delete
+```bash
+curl -X DELETE http://localhost:8000/api/todo-lists \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ids": [1, 2, 3]
+  }'
+```
+
+### Excel Export Features
+
+The Excel export includes:
+- **Formatted Headers**: Bold headers with background color
+- **Data Columns**: Title, Assignee, Due Date, Time Tracked, Status, Priority
+- **Summary Row**: Total time tracked across all filtered todos
+- **Auto-sizing**: Columns automatically adjust to content width
+- **Borders**: Clean table formatting with borders
+- **Date Formatting**: Consistent YYYY-MM-DD date format
+- **File Naming**: Timestamped filenames (e.g., `todolist_report_2025_09_11_14_30_45.xlsx`)
+
+### Response Format
+
+All API responses follow this format:
+
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": {
+    // Response data here
+  }
+}
+```
+
+### Validation Rules
+
+#### Create/Update TodoList
+
+| Field | Type | Rules | Options |
+|-------|------|-------|---------|
+| task | string | required, max:255 | - |
+| developer | string | nullable, max:255 | - |
+| priority | string | required | low, medium, high, critical, best_effort |
+| status | string | required | pending, in_progress, completed |
+| type | string | required | task, bug, feature |
+| due_date | date | nullable, after_or_equal:today | YYYY-MM-DD format |
+| description | string | nullable | - |
+| time_tracked | numeric | nullable, min:0 | Hours (decimal) |
+
+## Project Structure
+
+```
+app/
+├── Helpers/
+│   └── TodoListHelper.php          # Utility functions for data formatting
+├── Http/Controllers/Api/
+│   └── TodoListController.php      # Main API controller
+└── Models/
+    ├── TodoLists.php               # TodoList model
+    └── User.php                    # User model
+
+database/
+├── migrations/                     # Database schema migrations
+├── factories/                      # Model factories for testing
+└── seeders/                        # Database seeders
+
+tests/
+├── Unit/
+│   ├── TodoListStoreTest.php       # Unit tests for create operations
+│   └── TodoListDestroyTest.php     # Unit tests for delete operations
+└── Feature/                        # Feature tests
+```
+
+## Development
+
+### Code Style
+
+The project uses Laravel Pint for code formatting:
+
+```bash
+./vendor/bin/pint
+```
+
+### Database Migrations
+
+Create new migration:
+
+```bash
+php artisan make:migration create_your_table_name
+```
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Rollback migrations:
+
+```bash
+php artisan migrate:rollback
+```
+
+### Creating Tests
+
+Create unit test:
+
+```bash
+php artisan make:test YourTestName --unit
+```
+
+Create feature test:
+
+```bash
+php artisan make:test YourTestName
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Routes not found**: Ensure API routes are loaded in `bootstrap/app.php`
+2. **Database connection**: Check `.env` configuration and database file permissions
+3. **Permission errors**: Ensure `storage/` and `bootstrap/cache/` directories are writable
+
+### Useful Commands
+
+```bash
+# Clear all caches
+php artisan optimize:clear
+
+# List all routes
+php artisan route:list
+
+# Check application status
+php artisan about
+
+# View logs
+tail -f storage/logs/laravel.log
+```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

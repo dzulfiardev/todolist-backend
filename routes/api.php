@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\TodoListController;
+use App\Http\Controllers\Api\TodoListsReportsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,4 +20,10 @@ Route::prefix('todo-lists')->group(function () {
     Route::put('/{id}', [TodoListController::class, 'update']);      // PUT /api/todo-lists/{id}
     Route::patch('/{id}', [TodoListController::class, 'update']);    // PATCH /api/todo-lists/{id}
     Route::delete('/{id}', [TodoListController::class, 'destroy']);  // DELETE /api/todo-lists/{id} (single)
+});
+
+// TodoLists Reports API Routes
+Route::prefix('reports/todo-lists')->group(function () {
+    Route::get('/export', [TodoListsReportsController::class, 'exportExcel']);    // GET /api/reports/todo-lists/export
+    Route::get('/preview', [TodoListsReportsController::class, 'previewData']);   // GET /api/reports/todo-lists/preview
 });
