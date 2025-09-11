@@ -166,24 +166,6 @@ Both export and preview endpoints support the following query parameters:
 | `status` | string | Filter by status (comma-separated) | `status=pending,in_progress` |
 | `priority` | string | Filter by priority (comma-separated) | `priority=high,medium` |
 
-### Request Examples
-
-#### Create TodoList
-```bash
-curl -X POST http://localhost:8000/api/todo-lists \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task": "Complete project documentation",
-    "developer": "John Doe",
-    "priority": "high",
-    "status": "pending",
-    "type": "task",
-    "due_date": "2025-12-31",
-    "description": "Write comprehensive API documentation",
-    "time_tracked": "2.5"
-  }'
-```
-
 #### Search TodoLists
 ```bash
 curl "http://localhost:8000/api/todo-lists?search=documentation"
