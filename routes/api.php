@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\TodoListController;
 use App\Http\Controllers\Api\TodoListsReportsController;
+use App\Http\Controllers\Api\TodoListsChart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +28,6 @@ Route::prefix('reports/todo-lists')->group(function () {
     Route::get('/export', [TodoListsReportsController::class, 'exportExcel']);    // GET /api/reports/todo-lists/export
     Route::get('/preview', [TodoListsReportsController::class, 'previewData']);   // GET /api/reports/todo-lists/preview
 });
+
+// TodoLists Chart API Routes
+Route::get('/chart', [TodoListsChart::class, 'getChart']);                        // GET /api/chart?type=status

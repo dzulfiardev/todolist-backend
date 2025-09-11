@@ -8,6 +8,7 @@ A Laravel 11 REST API for managing todo lists with comprehensive CRUD operations
 - 🔍 Search functionality by task name
 - 📦 Bulk delete operations
 - 📊 Excel export with advanced filtering
+- 📈 Chart/Analytics API for status and priority distribution
 - 🏷️ Priority levels (low, medium, high, critical, best_effort)
 - 📊 Status tracking (pending, in_progress, completed)
 - 🎯 Task types (task, bug, feature)
@@ -133,6 +134,23 @@ http://localhost:8000/api
 | GET | `/api/reports/todo-lists/export` | Export todo lists to Excel with filtering |
 | GET | `/api/reports/todo-lists/preview` | Preview export data (JSON response) |
 
+### Chart Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/chart?type=status` | Get status distribution summary |
+| GET | `/api/chart?type=priority` | Get priority distribution summary |
+
+#### Chart Parameters
+
+| Parameter | Type | Required | Description | Example |
+|-----------|------|----------|-------------|---------|
+| `type` | string | Yes | Chart type to generate | `type=status` or `type=priority` |
+
+**Supported Chart Types:**
+- `status`: Returns count distribution of all todo list statuses
+- `priority`: Returns count distribution of all todo list priorities
+
 #### Export Filters
 
 Both export and preview endpoints support the following query parameters:
@@ -192,6 +210,15 @@ curl "http://localhost:8000/api/reports/todo-lists/export?min=0&max=8" --output 
 curl "http://localhost:8000/api/reports/todo-lists/preview?title=App&status=pending" -H "Accept: application/json"
 ```
 
+#### Get Chart Data
+```bash
+# Get status distribution summary
+curl "http://localhost:8000/api/chart?type=status" -H "Accept: application/json"
+
+# Get priority distribution summary
+curl "http://localhost:8000/api/chart?type=priority" -H "Accept: application/json"
+```
+
 #### Bulk Delete
 ```bash
 curl -X DELETE http://localhost:8000/api/todo-lists \
@@ -227,6 +254,49 @@ All API responses follow this format:
 
 ```json
 {
+  "success": true,
+  "message": "Operation successful",
+  "data": {
+    // Response data here
+  }
+}
+```
+
+#### Chart API Response Examples
+
+**Status Chart:**
+```json
+{
+  "success": true,
+  "message": "Status summary retrieved successfully",
+  "data": {
+    "status_summary": {
+      "pending": 5,
+      "open": 3,
+      "in_progress": 3,
+      "stuck": 2,
+      "completed": 3
+    }
+  }
+}
+```
+
+**Priority Chart:**
+```json
+{
+  "success": true,
+  "message": "Priority summary retrieved successfully",
+  "data": {
+    "priority_summary": {
+      "low": 1,
+      "medium": 5,
+      "high": 4,
+      "critical": 1,
+      "best_effort": 1
+    }
+  }
+}
+```
   "success": true,
   "message": "Operation successful",
   "data": {
@@ -341,14 +411,6 @@ php artisan about
 # View logs
 tail -f storage/logs/laravel.log
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
