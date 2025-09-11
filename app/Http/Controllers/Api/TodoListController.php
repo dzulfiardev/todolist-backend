@@ -75,8 +75,8 @@ class TodoListController extends Controller
 	{
 		try {
 			$validatedData = $request->validate([
-				'title' => 'nullable|string|max:255',
-				'assigne' => 'nullable|string|max:255',
+				'task' => 'nullable|string|max:255',
+				'developer' => 'nullable|string|max:255',
 				'due_date' => 'nullable|date|after_or_equal:today',
 				'time_tracked' => 'nullable|integer|min:0',
 				'status' => 'nullable|in:pending,open,in_progress,completed,stuck',
@@ -86,8 +86,8 @@ class TodoListController extends Controller
 				'actual_sp' => 'nullable|integer|min:0'
 			]);
 
-			if (!isset($validatedData['title']) || empty($validatedData['title'])) {
-				$validatedData['title'] = 'New Task';
+			if (!isset($validatedData['task']) || empty($validatedData['task'])) {
+				$validatedData['task'] = 'New Task';
 			}
 
 			if (!isset($validatedData['due_date']) || empty($validatedData['due_date'])) {
@@ -102,7 +102,19 @@ class TodoListController extends Controller
 				$validatedData['time_tracked'] = 0;
 			}
 
-			$todoList = TodoLists::create($validatedData);
+			$mapingPayloads = [
+				'title' => $validatedData['task'] ?? '',
+				'assigne' => $validatedData['developer'] ?? '',
+				'due_date' => $validatedData['due_date'] ?? '',
+				'time_tracked' => $validatedData['time_tracked'] ?? '',
+				'status' => $validatedData['status'] ?? null,
+				'priority' => $validatedData['priority'] ?? null,
+				'type' => $validatedData['type'] ?? null,
+				'estimated_sp' => $validatedData['estimated_sp'] ?? null,
+				'actual_sp' => $validatedData['actual_sp'] ?? null
+			];
+
+			$todoList = TodoLists::create($mapingPayloads);
 
 			return response()->json([
 				'success' => true,

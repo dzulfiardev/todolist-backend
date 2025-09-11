@@ -63,7 +63,7 @@ class TodoListStoreTest extends TestCase
 		$this->assertEquals('New Task', $createdTodo->title);
 		$this->assertEquals('pending', $createdTodo->status);
 		$this->assertEquals(now()->format('Y-m-d'), $createdTodo->due_date->format('Y-m-d'));
-		$this->assertNull($createdTodo->assigne);
+		$this->assertEquals('', $createdTodo->assigne); // Empty string instead of null
 		$this->assertEquals(0, $createdTodo->time_tracked);
 		$this->assertNull($createdTodo->priority);
 		$this->assertNull($createdTodo->type);
@@ -77,8 +77,8 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_success_with_full_data(): void
 	{
 		$todoData = [
-			'title' => 'Complete project documentation',
-			'assigne' => 'John Doe',
+			'task' => 'Complete project documentation',
+			'developer' => 'John Doe',
 			'due_date' => '2025-09-15',
 			'time_tracked' => 120,
 			'status' => 'in_progress',
@@ -130,7 +130,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_success_with_minimal_data(): void
 	{
 		$todoData = [
-			'title' => 'Simple task'
+			'task' => 'Simple task'
 		];
 
 		$response = $this->postJson('/api/todo-lists', $todoData);
@@ -155,7 +155,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_success_with_partial_data(): void
 	{
 		$todoData = [
-			'title' => 'Review code',
+			'task' => 'Review code',
 			'due_date' => '2025-09-20'
 		];
 
@@ -181,7 +181,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_fails_with_past_due_date(): void
 	{
 		$todoData = [
-			'title' => 'Past task',
+			'task' => 'Past task',
 			'due_date' => '2025-09-01' // Past date
 		];
 
@@ -201,7 +201,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_fails_with_invalid_status(): void
 	{
 		$todoData = [
-			'title' => 'Invalid status task',
+			'task' => 'Invalid status task',
 			'status' => 'invalid_status'
 		];
 
@@ -221,7 +221,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_fails_with_invalid_priority(): void
 	{
 		$todoData = [
-			'title' => 'Invalid priority task',
+			'task' => 'Invalid priority task',
 			'priority' => 'invalid_priority'
 		];
 
@@ -241,7 +241,7 @@ class TodoListStoreTest extends TestCase
 	public function test_store_todo_list_fails_with_invalid_type(): void
 	{
 		$todoData = [
-			'title' => 'Invalid type task',
+			'task' => 'Invalid type task',
 			'type' => 'invalid_type'
 		];
 
@@ -262,7 +262,7 @@ class TodoListStoreTest extends TestCase
 	{
 		// Test critical priority
 		$todoData1 = [
-			'title' => 'Critical Task',
+			'task' => 'Critical Task',
 			'priority' => 'critical',
 			'due_date' => '2025-09-15'
 		];
@@ -282,7 +282,7 @@ class TodoListStoreTest extends TestCase
 
 		// Test best_effort priority
 		$todoData2 = [
-			'title' => 'Best Effort Task',
+			'task' => 'Best Effort Task',
 			'priority' => 'best_effort',
 			'due_date' => '2025-09-16'
 		];
