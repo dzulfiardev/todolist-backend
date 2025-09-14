@@ -20,6 +20,7 @@ Route::prefix('todo-lists')->group(function () {
     Route::get('/{id}', [TodoListController::class, 'show']);        // GET /api/todo-lists/{id}
     Route::put('/{id}', [TodoListController::class, 'update']);      // PUT /api/todo-lists/{id}
     Route::patch('/{id}', [TodoListController::class, 'update']);    // PATCH /api/todo-lists/{id}
+    Route::options('/{id}', [TodoListController::class, 'update']);    // OPTIONS /api/todo-lists/{id}
     Route::delete('/{id}', [TodoListController::class, 'destroy']);  // DELETE /api/todo-lists/{id} (single)
 });
 
