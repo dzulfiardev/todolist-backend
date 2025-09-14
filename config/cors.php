@@ -7,6 +7,7 @@ return [
     
     'allowed_origins' => [
         'https://zultodolist.netlify.app',
+        'https://todolist.dzulfikardev.site',
         'http://localhost:3000',
         'http://localhost:8080',
     ],
