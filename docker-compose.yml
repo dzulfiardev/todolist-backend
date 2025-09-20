@@ -1,0 +1,103 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todolist-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - todolist-network
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+      # db_test:
+      #   condition: service_healthy
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_OPCACHE_REVALIDATE_FREQ=0
+
+  db:
+    image: mariadb:latest
+    container_name: todolist-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: todo_list_app
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - dbdata:/var/lib/mysql
+      # - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - todolist-network
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+    #   timeout: 20s
+    #   retries: 10
+
+  # db_test:
+  #   image: mysql:8.0
+  #   container_name: todolist-db-test
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_DATABASE: todo_list_app_test
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+  #   volumes:
+  #     - dbdata_test:/var/lib/mysql
+  #     - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+  #   ports:
+  #     - "3307:3306"
+  #   networks:
+  #     - todolist-network
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     timeout: 20s
+  #     retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: todolist-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - todolist-network
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: todolist-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+      UPLOAD_LIMIT: 512M
+    ports:
+      - "8080:80"
+    networks:
+      - todolist-network
+    depends_on:
+      - db
+
+networks:
+  todolist-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+  redisdata:
+    driver: local
