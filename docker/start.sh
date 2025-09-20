@@ -64,6 +64,10 @@ fi
 # Change to app directory
 cd /var/www
 
+# Install/update dependencies
+echo "Installing dependencies..."
+composer install --no-dev --optimize-autoloader --no-interaction
+
 # Generate application key if not exists
 echo "Generating application key..."
 php artisan key:generate --force
@@ -74,10 +78,6 @@ php artisan config:clear
 php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
-
-# Install/update dependencies
-echo "Installing dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction
 
 # Create storage symlink
 echo "Creating storage symlink..."
