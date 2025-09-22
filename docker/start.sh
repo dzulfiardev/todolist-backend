@@ -8,45 +8,29 @@ echo "Starting Laravel 12 TodoList Application..."
 # Install netcat for database connectivity checks
 apt-get update && apt-get install -y netcat-openbsd
 
-# Wait for database to be ready with more robust check
-echo "Waiting for database..."
-timeout=60
-while [ $timeout -gt 0 ]; do
-    if nc -z db 3306; then
-        echo "Database port is open, checking if MySQL is ready..."
-        if mysql -h db -u root -proot -e "SELECT 1" >/dev/null 2>&1; then
-            echo "Database is ready!"
-            break
-        fi
-    fi
-    echo "Database is unavailable - sleeping (${timeout}s remaining)"
-    sleep 2
-    timeout=$((timeout-2))
-done
-
-if [ $timeout -le 0 ]; then
-    echo "Database connection timeout!"
-    exit 1
-fi
-
-# Test database connectivity
-nc -z db 3306 && echo "Connection to db ($(getent hosts db | awk '{ print $1 }')) 3306 port [tcp/mysql] succeeded!"
-
-# Wait for database to be ready
+# # Wait for database to be ready with more robust check
 # echo "Waiting for database..."
-# until nc -z db 3306; do
-#   echo "Database is unavailable - sleeping"
-#   sleep 2
+# timeout=60
+# while [ $timeout -gt 0 ]; do
+#     if nc -z db 3306; then
+#         echo "Database port is open, checking if MySQL is ready..."
+#         if mysql -h db -u root -proot -e "SELECT 1" >/dev/null 2>&1; then
+#             echo "Database is ready!"
+#             break
+#         fi
+#     fi
+#     echo "Database is unavailable - sleeping (${timeout}s remaining)"
+#     sleep 2
+#     timeout=$((timeout-2))
 # done
-# echo "Database is up!"
 
-# Wait for test database to be ready
-# echo "Waiting for test database..."
-# until nc -z db 3306; do
-#   echo "Test database is unavailable - sleeping"  
-#   sleep 2
-# done
-# echo "Test database is up!"
+# if [ $timeout -le 0 ]; then
+#     echo "Database connection timeout!"
+#     exit 1
+# fi
+
+# # Test database connectivity
+# nc -z db 3306 && echo "Connection to db ($(getent hosts db | awk '{ print $1 }')) 3306 port [tcp/mysql] succeeded!"
 
 # Set proper permissions
 echo "Setting permissions..."
@@ -83,13 +67,13 @@ php artisan view:clear
 echo "Creating storage symlink..."
 php artisan storage:link || true
 
-# Run migrations for main database
-echo "Running main database migrations..."
-php artisan migrate --force
+# # Run migrations for main database
+# echo "Running main database migrations..."
+# php artisan migrate --force
 
-# Run migrations for test database
-echo "Running test database migrations..."
-php artisan migrate --env=testing --force || echo "Test migrations failed, continuing..."
+# # Run migrations for test database
+# echo "Running test database migrations..."
+# php artisan migrate --env=testing --force || echo "Test migrations failed, continuing..."
 
 # Cache configuration for better performance
 echo "Caching configuration..."
